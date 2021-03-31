@@ -1,0 +1,149 @@
+:root {
+  --black: #161a2b;
+  --white: #ffffff;
+}
+
+body {
+  text-align: center;
+  background-color: rgb(74, 57, 189);
+  background-image: linear-gradient(to right,
+  rgba(48, 16, 255, 1) 0%,
+  rgb(206, 116, 74) 21%,
+  rgb(219, 74, 74) 50%,
+  rgb(207, 61, 200) 79%,
+  rgba(48, 16, 255, 1) 100%
+  );
+}
+
+::-webkit-scrollbar {
+  width: 20px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: var(--black);
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: rgb(214, 99, 46);
+  background-image: linear-gradient(to bottom,
+  rgba(48, 16, 255, 1) 0%,
+  rgb(206, 116, 74) 28%,
+  rgb(219, 74, 74) 50%,
+  rgb(207, 61, 200) 72%,
+  rgba(48, 16, 255, 1) 100%
+  );
+  border-radius: 20px;
+  border: 6px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(219, 74, 74);
+}
+
+::-webkit-scrollbar-corner{
+  background-color: transparent;
+}
+
+/* Navbar */
+
+
+@import url('https://fonts.googleapis.com/css?family=Muli&display=swap');
+* {
+	box-sizing: border-box;
+}
+
+
+/* Blog */
+
+
+.blog-title {
+  font-size: 45px;
+  font-weight: bold;
+  color: rgba(255, 84, 17, 1);
+	letter-spacing: 1px;
+	padding: 10px 15px;
+}
+
+
+.blog-para {
+  font-family: 'Muli', sans-serif;
+  text-align: left;
+  font-size: 20px;
+  color: #ffffff;
+  opacity: 0.9;
+  padding: 6px 30px;
+	letter-spacing: 2px;
+}
+
+
+.redirect-button{
+  padding: 16px;
+  border: none;
+  border-radius: 5px;
+  margin: 10px auto;
+  cursor: pointer;
+  outline: none;
+  background: linear-gradient(
+    90deg,
+    rgba(93, 12, 255, 1) 0%,
+    rgba(155, 0, 250, 1) 100%
+  );
+  color: #fff;
+}
+
+
+
+@keyframes fadeIn {
+	0% {opacity: 0;}
+	100% {opacity: 1;}
+}
+
+
+/* Paste Bin */
+
+.pastebin-text {
+  position: fixed;
+  display: flex;
+  background: transparent;
+  width: 99%;
+  height: 95%;
+  /* height: 91vh; */
+  border: 2.5px solid rgba(17, 122, 255, 1);
+  resize: none;
+  padding: 9px;
+  color: rgb(82, 192, 31);
+  outline: none;
+  line-height: 105%;
+  /* font-size: 13px;  */
+}
+
+
+.save-pastebin{
+  position: fixed;
+  z-index: 1;
+  right: 1.5%;
+  bottom: 3%;
+  /* -ms-transform: translate(-50%, -50%); */
+  transform: translate(-50%, -50%);
+  /* bottom: 20%; */
+
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  /* margin: 10px auto; */
+  cursor: pointer;
+  outline: none;
+  margin-bottom: 20px;
+  background: linear-gradient(
+    90deg,
+    rgba(20, 159, 255, 1)0%,
+    rgba(17, 122, 255, 1) 100%
+  );
+  color: #fff;
+  text-transform: capitalize;
+  animation: fadeIn 1s 1;
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.8);
+}
+
+
