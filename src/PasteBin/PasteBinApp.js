@@ -2,26 +2,65 @@ import React, { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet'
 import firebase from './firebase';
 import { useSnackbar } from 'notistack';
+import { FaShare } from "react-icons/fa";
 
 
 function PasteBinApp() {
-    const [showApp, setShowApp] = useState(false);
     const [result, setResult] = useState('');
     const [data, setData] = useState('Write and Share');
     const [savePath, setSavePath] = useState("")
     const [saved, setSaved] = useState(true);
 
 
+    const copyToClipboard = (command) =>{
+        var toCopy = command;
+
+        var temp = document.createElement("textarea");
+        var tempMsg = document.createTextNode(toCopy);
+        temp.appendChild(tempMsg);
+
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand("copy");
+        document.body.removeChild(temp);
+
+        var message = "Link copied to clipboard.";
+        enqueueSnackbar(message, {
+            variant: 'success',
+        })
+    }
+
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     document.title = "Paste Bin | Shlok Zanwar"
 
+    const dontShowSnackbar = (key) =>{
+        localStorage.setItem("dontShowPastebinSnack", true);
+        closeSnackbar(key);
+    }
+
     const action = key => (
         <React.Fragment>
-            <div onClick={() => { closeSnackbar(key) }} style={{background:"transparent", border:"none", cursor:"pointer", color:"red" }}>
+            <>
+            <div onClick={() => { dontShowSnackbar(key) }} style={{background:"transparent", border:"none", cursor:"pointer", color:"#fc28b2", paddingRight:"8px", textDecoration:"underline", fontWeight:"bolder" }}>
+                Dont show again
+            </div>
+            <div onClick={() => { closeSnackbar(key) }} style={{background:"transparent", border:"none", cursor:"pointer", color:"#fc28b2", textDecoration:"underline", fontWeight:"bolder" }}>
                 Dismiss
             </div>
+            </>
         </React.Fragment>
     );
+
+
+    const saveRecent = (path) => {
+        var recentPasteBins = localStorage.getItem('recentPasteBins') ? JSON.parse(localStorage.getItem('recentPasteBins')) : [];
+        recentPasteBins = [...recentPasteBins].filter(pasteBin => pasteBin !== path);
+        recentPasteBins = [path, ...recentPasteBins];
+        if(recentPasteBins.length > 6){
+            recentPasteBins.pop();
+        }
+        localStorage.setItem('recentPasteBins', JSON.stringify(recentPasteBins));
+    }
 
 
     useEffect(() => {
@@ -38,30 +77,26 @@ function PasteBinApp() {
         path = path.split("/");
         // console.log(path)
 
-        if(path.length == 1){
-            setShowApp(true)
+        if(path.length > 2){
+            window.location.pathname = "/" + path[0] + "/" + path[1];
         }
-        else{
-            setShowApp(false);
-            if(path.length > 2){
-                window.location.pathname = "/" + path[0] + "/" + path[1];
-            }
-    
-            if(path[0].toLowerCase() === "pastebin"){
-                setSavePath(path[1].toLowerCase());
-                firebase.getData(path[1].toLowerCase()).then(setResult);
-            }
+
+        if(path[0].toLowerCase() === "pastebin"){
+            setSavePath(path[1].toLowerCase());
+            firebase.getData(path[1].toLowerCase()).then(setResult, saveRecent(path[1]));
         }
 
     }, [])
 
 
     useEffect(() => {
-        enqueueSnackbar("Paste bin is publically visible.\nPlease do not share pribate information.", {
-            variant: 'info',
-            autoHideDuration: 5000,
-            action,
-        });
+        if(!localStorage.getItem("dontShowPastebinSnack")){
+            enqueueSnackbar("Paste bin is publically visible.\nPlease do not share private information.", {
+                variant: 'info',
+                autoHideDuration: 5000,
+                action,
+            });
+        }
     }, [])
 
 
@@ -88,35 +123,7 @@ function PasteBinApp() {
     }
 
 
-    const generateNewURL = () => {
-        let r = Math.random().toString(36).substring(4);
-        window.location.pathname += "/" + r;
-    }
-
-
-    return showApp ?  
-        <div>
-            <Helmet>
-                <style>
-                {`            
-                    body {
-                    text-align: center;
-                    background-color: #161a2b;
-                    background-image: none;
-                }
-                `}
-                </style>
-            </Helmet>
-            <div className="blog-title">Paste Bin</div>
-            <div className="blog-para" style={{textAlign:"center"}}>A pastebin for sharing data without any authentication.</div>
-            <div className="blog-para" style={{textAlign:"center"}}>Go to some URl like "/pastebin/any"</div>
-            <div className="blog-para" style={{textAlign:"center"}}>Write anything</div>
-            <div className="blog-para" style={{textAlign:"center"}}>Save</div>
-            <div className="blog-para" style={{textAlign:"center"}}>Share the URL with anyone</div>
-            <br></br>
-            <div className="redirect-button" style={{maxWidth:"230px"}} onClick={() => generateNewURL()} >Generate random URL</div>
-        </div>
-    : (
+    return (
         <div style={{display:"flex", position:"relative"}}>
             <Helmet>
                 <style>
@@ -129,10 +136,21 @@ function PasteBinApp() {
                 `}
                 </style>
             </Helmet>
-            <textarea className="pastebin-text" spellCheck="false" value={data} onChange={e => {setData(e.target.value); setSaved(false)}} >
+            <textarea 
+                className="pastebin-text" 
+                spellCheck="false" 
+                value={data} 
+                onChange={e => {setData(e.target.value); setSaved(false)}}
+            >
             </textarea>
-            <div className="save-pastebin" onClick={() => saveData()}> &nbsp;&nbsp; Save &nbsp;&nbsp; </div>
-            
+            <div className="pastebin-controls"> 
+                    <button className="save-share-pastebin" onClick={() => saveData()}>
+                        &nbsp;&nbsp; Save &nbsp;&nbsp; 
+                    </button>
+                    <button className="save-share-pastebin" onClick={() => {copyToClipboard(window.location.href)}}>
+                        <FaShare /> 
+                    </button>
+            </div>
             
         </div>
     )
